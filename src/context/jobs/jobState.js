@@ -22,8 +22,8 @@ const JobState = (props) => {
         setJobs(json);
     }
 
-    // Get jobs posted by a specific employer
-    const getJobsForEmployer = async (userId) => {
+     // Get jobs posted by a specific employer
+     const getJobsForEmployer = async (userId) => {
         try {
             // API call to fetch job listings posted by a specific employer
             const response = await fetch(`${host}/api/jobs/fetchjobsforemployer?userId=${userId}`, {
@@ -63,23 +63,11 @@ const JobState = (props) => {
     }
 
     // Edit a job
-
-
-    const editJob = async (jobId, jobTitle, description, requirements, contactInformation, jobLocation, jobCategory) => {
+    const editJob = async (jobId, jobData) => {
         try {
             // Construct the URL with the jobId
             const url = `${host}/api/jobs/editjob/${jobId}`;
-
-            // Construct the job data object
-            // const jobData = {
-            //     jobTitle: jobTitle,
-            //     description: description,
-            //     requirements: requirements,
-            //     contactInformation: contactInformation,
-            //     jobLocation: jobLocation,
-            //     jobCategory: jobCategory,
-            // };
-
+    
             // API call to update a job listing
             const response = await fetch(url, {
                 method: "PATCH",
@@ -87,35 +75,36 @@ const JobState = (props) => {
                     "Content-Type": "application/json",
                     "auth-token": localStorage.getItem('token'),
                 },
-                body: JSON.stringify({jobTitle, description, requirements, contactInformation, jobLocation, jobCategory }),
+                body: JSON.stringify(jobData),
             });
-
-            const json = await response.json();
-
-            // Logic to edit in the client
-            let newJobs = JSON.parse(JSON.stringify(jobs));
-            for (let index = 0; index < newJobs.length; index++) {
-                const element = newJobs[index];
-                if (element._id === jobId) {
-                    newJobs[index].jobTitle = jobTitle;
-                    newJobs[index].description = description;
-                    newJobs[index].requirements = requirements;
-                    newJobs[index].contactInformation = contactInformation; // Assuming the response is the updated job object
-                    newJobs[index].jobLocation = jobLocation;
-                    newJobs[index].jobCategory = jobCategory;
-                    break;
-                }
+    
+            if (response.ok) {
+                const updatedJob = await response.json();
+    
+                // Update the job in the state
+                const updatedJobs = jobs.map((job) => {
+                    if (job._id === jobId) {
+                        // Use the spread operator to merge the updated data
+                        return { ...job, ...updatedJob };
+                    }
+                    return job;
+                });
+    
+                setJobs(updatedJobs);
+                props.showAlert("Job updated successfully", "success");
+            } else {
+                // Handle errors
+                const errorResponse = await response.json();
+                console.error(errorResponse.error);
+                props.showAlert("Error updating job", "error");
             }
-
-            setJobs(newJobs);
-            props.showAlert("Job updated successfully", "success");
         } catch (error) {
             console.error(error);
             props.showAlert('Error updating job', 'error');
         }
-    };
-
-
+    }
+    
+    
 
     // Delete a job
     const deleteJob = async (jobId) => {

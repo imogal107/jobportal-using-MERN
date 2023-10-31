@@ -100,6 +100,7 @@ import EmployeeDashboard from './components/EmployeeDashboard';
 import EmployerDashboard from './components/EmployerDashboard';
 import ManageJobs from './components/ManageJobs';
 
+
 function App() {
 
   const [alert, setAlert] = useState(null);
@@ -116,6 +117,7 @@ function App() {
 
   return (
     <>
+   
       <JobState showAlert={showAlert}>
         <div className="App">
           <Router>
@@ -135,6 +137,7 @@ function App() {
           </Router>
         </div>
       </JobState>
+    
     </>
   );
 }
