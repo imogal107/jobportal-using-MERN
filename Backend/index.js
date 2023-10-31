@@ -1,30 +1,18 @@
-// index.js
 
+const connectToMongo = require('./db');
+const cors = require('cors');
+connectToMongo();
 const express = require('express');
-const { connectToDatabase, mongoose } = require('./db.js'); // Import modules using require
-
 const app = express();
-const port = 3000; // You can use any port you prefer
+const port = 5000;
 
-// Middleware to ensure the database is connected before handling requests
-app.use(async (req, res, next) => {
-  if (!mongoose.connection.readyState) {
-    try {
-      await connectToDatabase();
-      next();
-    } catch (error) {
-      res.status(500).send('Error connecting to the database.');
-    }
-  } else {
-    next();
-  }
-});
+app.use(cors())
+app.use(express.json());
 
-// Define your API routes and other Express.js configurations here
-app.get('/', (req, res) => {
-  res.send('Hello, Express!');
-});
+//Available Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/jobs', require('./routes/jobs'));
 
 app.listen(port, () => {
-  console.log(`Server is running on port http://localhost:${port}`);
-});
+  console.log(`Example app listening on port http://localhost:${port}`)
+})
