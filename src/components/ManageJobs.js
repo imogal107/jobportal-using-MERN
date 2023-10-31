@@ -16,7 +16,7 @@ const ManageJobs = () => {
       const refClose = useRef(null)
      
     const [job, setJob] = useState({ id: "", ejobTitle: '', edescription: '', erequirements: '', econtactInformation: { ename: '', eemail: '', ephone: '', }, ejobLocation: '', ejobCategory: '' })
-    const contactInformation = job ? job.contactInformation : {};
+    const contactInformation = job ? job.econtactInformation : {};
 
  
 
